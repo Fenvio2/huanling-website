@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>注册 · 幻灵</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+      background: #F5F5F7;
+      color: #1D1D1F;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      top: 32px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-120px);
+      background: #FF3B30;
+      color: #FFFFFF;
+      padding: 14px 28px;
+      border-radius: 16px;
+      font-size: 15px;
+      font-weight: 500;
+      letter-spacing: -0.2px;
+      box-shadow: 0 8px 32px rgba(255, 59, 48, 0.28);
+      z-index: 1000;
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+      white-space: nowrap;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .toast.success {
+      background: #34C759;
+      box-shadow: 0 8px 32px rgba(52, 199, 89, 0.28);
+    }
+
+    /* Card */
+    .auth-card {
+      background: #FFFFFF;
+      border-radius: 20px;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+      padding: 48px 40px;
+      width: 100%;
+      max-width: 420px;
+      transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+    }
+
+    .auth-card:hover {
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.04);
+    }
+
+    /* Logo */
+    .auth-logo {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .auth-logo img {
+      width: 72px;
+      height: 72px;
+      display: block;
+      margin: 0 auto 16px;
+      filter: drop-shadow(0 4px 12px rgba(33, 150, 243, 0.25));
+    }
+
+    .auth-title {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: #1D1D1F;
+      margin-bottom: 6px;
+    }
+
+    .auth-subtitle {
+      font-size: 15px;
+      color: #86868B;
+      font-weight: 400;
+      letter-spacing: -0.2px;
+    }
+
+    /* Form */
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #1D1D1F;
+      margin-bottom: 8px;
+      letter-spacing: -0.1px;
+    }
+
+    .form-input {
+      width: 100%;
+      height: 48px;
+      padding: 0 16px;
+      font-size: 15px;
+      font-family: inherit;
+      color: #1D1D1F;
+      background: #F5F5F7;
+      border: 1.5px solid #D2D2D7;
+      border-radius: 12px;
+      outline: none;
+      transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .form-input::placeholder {
+      color: #86868B;
+    }
+
+    .form-input:focus {
+      border-color: #007AFF;
+      background: #FFFFFF;
+      box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.12);
+    }
+
+    .form-input.error {
+      border-color: #FF3B30;
+      box-shadow: 0 0 0 3px rgba(255, 59, 48, 0.08);
+    }
+
+    /* Password wrapper */
+    .password-wrapper {
+      position: relative;
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #86868B;
+      padding: 6px;
+      font-size: 18px;
+      line-height: 1;
+      transition: color 0.2s;
+    }
+
+    .password-toggle:hover {
+      color: #1D1D1F;
+    }
+
+    /* Hint text */
+    .form-hint {
+      font-size: 12px;
+      color: #86868B;
+      margin-top: 6px;
+      letter-spacing: -0.1px;
+    }
+
+    /* Button */
+    .btn-submit {
+      width: 100%;
+      height: 48px;
+      border: none;
+      border-radius: 24px;
+      background: linear-gradient(135deg, #007AFF 0%, #0055CC 100%);
+      color: #FFFFFF;
+      font-size: 16px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      letter-spacing: -0.2px;
+      transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+      box-shadow: 0 4px 16px rgba(0, 122, 255, 0.25);
+      position: relative;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(0, 122, 255, 0.35);
+    }
+
+    .btn-submit:active {
+      transform: translateY(0) scale(0.98);
+      box-shadow: 0 2px 8px rgba(0, 122, 255, 0.2);
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: 0 4px 16px rgba(0, 122, 255, 0.15);
+    }
+
+    .btn-submit .spinner {
+      display: none;
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: #FFFFFF;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+
+    .btn-submit.loading .spinner {
+      display: inline-block;
+    }
+
+    .btn-submit.loading .btn-text {
+      display: inline-block;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Footer link */
+    .auth-footer {
+      text-align: center;
+      margin-top: 28px;
+    }
+
+    .auth-footer a {
+      font-size: 14px;
+      color: #007AFF;
+      text-decoration: none;
+      font-weight: 500;
+      transition: opacity 0.2s;
+    }
+
+    .auth-footer a:hover {
+      opacity: 0.7;
+    }
+
+    .auth-footer span {
+      color: #86868B;
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      .auth-card {
+        padding: 36px 24px;
+        border-radius: 16px;
+      }
+
+      .auth-title {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Auth Card -->
+  <div class="auth-card">
+    <div class="auth-logo">
+      <img src="images/logo.svg" alt="幻灵 Logo">
+      <h1 class="auth-title">加入幻灵</h1>
+      <p class="auth-subtitle">创建你的账号，开启AI智能体之旅</p>
+    </div>
+
+    <form id="registerForm" novalidate>
+      <div class="form-group">
+        <label class="form-label" for="username">用户名</label>
+        <input
+          type="text"
+          id="username"
+          class="form-input"
+          placeholder="3-20个字符"
+          required
+          minlength="3"
+          maxlength="20"
+          autocomplete="username"
+        >
+        <p class="form-hint" id="usernameHint"></p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="email">邮箱</label>
+        <input
+          type="email"
+          id="email"
+          class="form-input"
+          placeholder="example@email.com"
+          required
+          autocomplete="email"
+        >
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password">密码</label>
+        <div class="password-wrapper">
+          <input
+            type="password"
+            id="password"
+            class="form-input"
+            placeholder="至少6位密码"
+            required
+            minlength="6"
+            autocomplete="new-password"
+          >
+          <button type="button" class="password-toggle" id="passwordToggle" aria-label="显示密码">
+            👁
+          </button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="confirmPassword">确认密码</label>
+        <input
+          type="password"
+          id="confirmPassword"
+          class="form-input"
+          placeholder="再次输入密码"
+          required
+          autocomplete="new-password"
+        >
+      </div>
+
+      <button type="submit" class="btn-submit" id="submitBtn">
+        <span class="spinner"></span>
+        <span class="btn-text">创建账号</span>
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      <span>已有账号？</span>
+      <a href="login.html">立即登录 →</a>
+    </div>
+  </div>
+
+  <script>
+    var API_BASE = (function() {
+      // 本地开发时使用 localhost:5000
+      // 生产环境时替换为你的后端地址
+      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        return 'http://localhost:5000';
+      }
+      // 生产环境后端地址 - 部署后替换此处
+      return 'http://localhost:5000';
+    })();
+
+    (function () {
+      var form = document.getElementById('registerForm');
+      var usernameInput = document.getElementById('username');
+      var emailInput = document.getElementById('email');
+      var passwordInput = document.getElementById('password');
+      var confirmPasswordInput = document.getElementById('confirmPassword');
+      var submitBtn = document.getElementById('submitBtn');
+      var passwordToggle = document.getElementById('passwordToggle');
+      var usernameHint = document.getElementById('usernameHint');
+      var toast = document.getElementById('toast');
+
+      var toastTimer = null;
+
+      function showToast(message, type) {
+        if (toastTimer) clearTimeout(toastTimer);
+        toast.textContent = message;
+        toast.className = 'toast ' + (type || 'error') + ' show';
+        toastTimer = setTimeout(function () {
+          toast.classList.remove('show');
+        }, 3000);
+      }
+
+      // Email validation regex
+      function isValidEmail(email) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      }
+
+      // Password visibility toggle
+      passwordToggle.addEventListener('click', function () {
+        var isPassword = passwordInput.type === 'password';
+        passwordInput.type = isPassword ? 'text' : 'password';
+        passwordToggle.textContent = isPassword ? '🙈' : '👁';
+      });
+
+      // Clear error styling on input
+      [usernameInput, emailInput, passwordInput, confirmPasswordInput].forEach(function (el) {
+        el.addEventListener('input', function () {
+          el.classList.remove('error');
+        });
+      });
+
+      // Username length indicator
+      usernameInput.addEventListener('input', function () {
+        var len = usernameInput.value.trim().length;
+        if (len === 0) {
+          usernameHint.textContent = '';
+        } else if (len < 3) {
+          usernameHint.textContent = '用户名至少需要 3 个字符（当前 ' + len + '）';
+          usernameHint.style.color = '#FF3B30';
+        } else if (len > 20) {
+          usernameHint.textContent = '用户名最多 20 个字符（当前 ' + len + '）';
+          usernameHint.style.color = '#FF3B30';
+        } else {
+          usernameHint.textContent = '';
+        }
+      });
+
+      // Submit
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        var username = usernameInput.value.trim();
+        var email = emailInput.value.trim();
+        var password = passwordInput.value;
+        var confirmPassword = confirmPasswordInput.value;
+
+        // Reset errors
+        [usernameInput, emailInput, passwordInput, confirmPasswordInput].forEach(function (el) {
+          el.classList.remove('error');
+        });
+
+        var hasError = false;
+
+        // Validate username
+        if (!username) {
+          usernameInput.classList.add('error');
+          showToast('请输入用户名');
+          hasError = true;
+        } else if (username.length < 3) {
+          usernameInput.classList.add('error');
+          showToast('用户名至少需要 3 个字符');
+          hasError = true;
+        } else if (username.length > 20) {
+          usernameInput.classList.add('error');
+          showToast('用户名最多 20 个字符');
+          hasError = true;
+        }
+
+        // Validate email
+        if (!email) {
+          emailInput.classList.add('error');
+          showToast('请输入邮箱');
+          hasError = true;
+        } else if (!isValidEmail(email)) {
+          emailInput.classList.add('error');
+          showToast('请输入有效的邮箱地址');
+          hasError = true;
+        }
+
+        // Validate password
+        if (!password) {
+          passwordInput.classList.add('error');
+          showToast('请输入密码');
+          hasError = true;
+        } else if (password.length < 6) {
+          passwordInput.classList.add('error');
+          showToast('密码至少需要 6 位');
+          hasError = true;
+        }
+
+        // Validate confirm password
+        if (!confirmPassword) {
+          confirmPasswordInput.classList.add('error');
+          showToast('请确认密码');
+          hasError = true;
+        } else if (password !== confirmPassword) {
+          confirmPasswordInput.classList.add('error');
+          showToast('两次输入的密码不一致');
+          hasError = true;
+        }
+
+        if (hasError) return;
+
+        // Loading state
+        submitBtn.classList.add('loading');
+        submitBtn.disabled = true;
+
+        fetch(API_BASE + '/api/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username: username,
+            email: email,
+            password: password
+          })
+        })
+          .then(function (res) {
+            return res.json().then(function (data) {
+              if (!res.ok) {
+                throw new Error(data.error || '注册失败，请稍后重试');
+              }
+              return data;
+            });
+          })
+          .then(function () {
+            showToast('注册成功，即将跳转到登录页', 'success');
+            setTimeout(function () {
+              window.location.href = 'login.html';
+            }, 1000);
+          })
+          .catch(function (err) {
+            showToast(err.message);
+          })
+          .finally(function () {
+            submitBtn.classList.remove('loading');
+            submitBtn.disabled = false;
+          });
+      });
+    })();
+  </script>
+
+</body>
+</html>

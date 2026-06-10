@@ -28,7 +28,9 @@
           <li><a href="about.html" class="active">关于我们</a></li>
           <li><a href="services.html">产品服务</a></li>
           <li><a href="contact.html">联系我们</a></li>
-          <li><a href="services.html" class="btn btn-primary nav-cta">立即体验</a></li>
+          <li id="nav-login-link"><a href="login.html">登录</a></li>
+          <li id="nav-register-link"><a href="register.html" class="nav-cta btn btn-primary">注册</a></li>
+          <li id="nav-user-link" style="display:none;"><a href="user-center.html">个人中心</a></li>
         </ul>
       </nav>
       <button class="menu-toggle" aria-label="菜单">
@@ -237,5 +239,23 @@
   </footer>
 
   <script src="js/main.js"></script>
+  <script>
+  (function() {
+    var token = localStorage.getItem('huanling_token');
+    var user = null;
+    try { user = JSON.parse(localStorage.getItem('huanling_user')); } catch(e) {}
+    if (token && user) {
+      var loginLink = document.getElementById('nav-login-link');
+      var registerLink = document.getElementById('nav-register-link');
+      var userLink = document.getElementById('nav-user-link');
+      if (loginLink) loginLink.style.display = 'none';
+      if (registerLink) registerLink.style.display = 'none';
+      if (userLink) {
+        userLink.style.display = '';
+        userLink.querySelector('a').textContent = user.username || '个人中心';
+      }
+    }
+  })();
+</script>
 </body>
 </html>

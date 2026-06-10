@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>用户中心 · 幻灵</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #F5F5F7;
+      --card: #FFFFFF;
+      --text: #1D1D1F;
+      --text-secondary: #86868B;
+      --blue: #007AFF;
+      --blue-hover: #0066D6;
+      --red: #FF3B30;
+      --border: #E5E5EA;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+      --radius: 12px;
+      --radius-lg: 20px;
+      --transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .page-container {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 0 20px 40px;
+    }
+
+    /* Header */
+    .page-header {
+      padding: 20px 0;
+      text-align: center;
+    }
+
+    .back-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .back-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+      color: var(--blue);
+      font-size: 20px;
+    }
+
+    .back-btn:hover {
+      background: rgba(0,122,255,0.06);
+    }
+
+    .back-label {
+      font-size: 14px;
+      color: var(--blue);
+      font-weight: 500;
+    }
+
+    /* Profile Card */
+    .profile-card {
+      background: var(--card);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      padding: 32px 24px;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .avatar {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--blue), #5856D6);
+      color: #fff;
+      font-size: 32px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    .username {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 4px;
+    }
+
+    .email {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    /* Account Info Card */
+    .info-card {
+      background: var(--card);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      padding: 0;
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+
+    .info-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid #F0F0F5;
+    }
+
+    .info-item:last-child {
+      border-bottom: none;
+    }
+
+    .info-label {
+      font-size: 14px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .info-value {
+      font-size: 14px;
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .status-active {
+      background: rgba(52,199,89,0.1);
+      color: #34C759;
+    }
+
+    /* Menu List - Apple Settings Style */
+    .menu-section {
+      background: var(--card);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid #F0F0F5;
+      cursor: pointer;
+      transition: var(--transition);
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .menu-item:last-child {
+      border-bottom: none;
+    }
+
+    .menu-item:hover {
+      background: rgba(0,122,255,0.03);
+    }
+
+    .menu-item:active {
+      background: rgba(0,122,255,0.08);
+    }
+
+    .menu-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .menu-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .menu-icon.blue { background: rgba(0,122,255,0.1); color: var(--blue); }
+    .menu-icon.orange { background: rgba(255,149,0,0.1); color: #FF9500; }
+    .menu-icon.purple { background: rgba(175,82,222,0.1); color: #AF52DE; }
+    .menu-icon.red { background: rgba(255,59,48,0.1); color: var(--red); }
+
+    .menu-label {
+      font-size: 15px;
+      font-weight: 500;
+    }
+
+    .menu-arrow {
+      color: #C7C7CC;
+      transition: var(--transition);
+    }
+
+    .menu-item:hover .menu-arrow {
+      color: #AEAEB2;
+      transform: translateX(2px);
+    }
+
+    .menu-divider {
+      height: 1px;
+      background: #F0F0F5;
+      margin: 0 20px;
+    }
+
+    /* Logout special style */
+    .menu-item.logout-item .menu-label {
+      color: var(--red);
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      top: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1D1D1F;
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      opacity: 0;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      z-index: 9999;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .toast.error {
+      background: var(--red);
+    }
+
+    /* Modal for edit profile */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--card);
+      border-radius: var(--radius-lg);
+      padding: 28px 24px;
+      max-width: 380px;
+      width: 90%;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .modal-title {
+      font-size: 17px;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .modal .form-group {
+      margin-bottom: 16px;
+    }
+
+    .modal .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+
+    .modal .form-input {
+      width: 100%;
+      height: 44px;
+      padding: 0 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 15px;
+      font-family: inherit;
+      color: var(--text);
+      background: #FAFAFA;
+      transition: var(--transition);
+      outline: none;
+    }
+
+    .modal .form-input:focus {
+      border-color: var(--blue);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(0,122,255,0.1);
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .btn {
+      flex: 1;
+      height: 44px;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn-primary {
+      background: var(--blue);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: var(--blue-hover);
+    }
+
+    .btn-cancel {
+      background: #F0F0F5;
+      color: var(--text);
+    }
+
+    .btn-cancel:hover {
+      background: #E5E5EA;
+    }
+
+    /* Loading state */
+    .loading {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-secondary);
+    }
+  </style>
+</head>
+<body>
+  <!-- Toast -->
+  <div id="toast" class="toast"></div>
+
+  <!-- Loading State -->
+  <div id="loadingState" class="loading">
+    <p>加载中...</p>
+  </div>
+
+  <!-- Main Content -->
+  <div id="mainContent" class="page-container" style="display:none;">
+    <!-- Back Button -->
+    <div class="back-row">
+      <button class="back-btn" onclick="history.back()" title="返回">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <span class="back-label">返回</span>
+    </div>
+
+    <!-- Profile Card -->
+    <div class="profile-card">
+      <div class="avatar" id="userAvatar">U</div>
+      <div class="username" id="displayName">用户</div>
+      <div class="email" id="displayEmail">user@example.com</div>
+    </div>
+
+    <!-- Account Info Card -->
+    <div class="info-card">
+      <div class="info-item">
+        <span class="info-label">注册时间</span>
+        <span class="info-value" id="infoCreatedAt">--</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">账户状态</span>
+        <span class="info-value"><span class="status-badge status-active">正常</span></span>
+      </div>
+    </div>
+
+    <!-- Menu List -->
+    <div class="menu-section">
+      <a class="menu-item" href="javascript:void(0)" onclick="openEditProfile()">
+        <div class="menu-left">
+          <div class="menu-icon blue">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <span class="menu-label">个人资料</span>
+        </div>
+        <span class="menu-arrow">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </span>
+      </a>
+
+      <div class="menu-divider"></div>
+
+      <a class="menu-item" href="payment.html">
+        <div class="menu-left">
+          <div class="menu-icon orange">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          </div>
+          <span class="menu-label">我的订单</span>
+        </div>
+        <span class="menu-arrow">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </span>
+      </a>
+
+      <div class="menu-divider"></div>
+
+      <a class="menu-item" href="about.html">
+        <div class="menu-left">
+          <div class="menu-icon purple">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          </div>
+          <span class="menu-label">关于幻灵</span>
+        </div>
+        <span class="menu-arrow">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </span>
+      </a>
+
+      <div class="menu-divider"></div>
+
+      <a class="menu-item logout-item" href="javascript:void(0)" onclick="handleLogout()">
+        <div class="menu-left">
+          <div class="menu-icon red">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          </div>
+          <span class="menu-label">退出登录</span>
+        </div>
+        <span class="menu-arrow">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Edit Profile Modal -->
+  <div id="editModal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-title">编辑个人资料</div>
+      <div class="form-group">
+        <label class="form-label">用户名</label>
+        <input type="text" id="editUsername" class="form-input" placeholder="请输入用户名">
+      </div>
+      <div class="form-group">
+        <label class="form-label">邮箱</label>
+        <input type="email" id="editEmail" class="form-input" placeholder="请输入邮箱">
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-cancel" onclick="closeEditModal()">取消</button>
+        <button class="btn btn-primary" onclick="saveProfile()">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var API_BASE = (function() {
+      // 本地开发时使用 localhost:5000
+      // 生产环境时替换为你的后端地址
+      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        return 'http://localhost:5000';
+      }
+      // 生产环境后端地址 - 部署后替换此处
+      return 'http://localhost:5000';
+    })();
+
+    // ============ INIT ============
+    document.addEventListener('DOMContentLoaded', init);
+
+    async function init() {
+      const token = localStorage.getItem('huanling_token');
+      if (!token) {
+        showToast('请先登录', 'error');
+        setTimeout(() => { window.location.href = 'login.html'; }, 1000);
+        return;
+      }
+
+      try {
+        // Try to get user info from localStorage first
+        const storedUser = localStorage.getItem('huanling_user');
+        let userData = null;
+
+        if (storedUser) {
+          try {
+            userData = JSON.parse(storedUser);
+          } catch (e) {}
+        }
+
+        // Try fetching user profile from API
+        try {
+          const res = await fetch(`${API_BASE}/user/profile`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if (res.ok) {
+            const data = await res.json();
+            userData = data.user || data;
+          }
+        } catch (e) {
+          // Fall back to localStorage data
+        }
+
+        if (!userData) {
+          showToast('无法获取用户信息', 'error');
+          setTimeout(() => { window.location.href = 'login.html'; }, 1000);
+          return;
+        }
+
+        renderUser(userData);
+      } catch (err) {
+        showToast('加载失败', 'error');
+      }
+    }
+
+    function renderUser(user) {
+      document.getElementById('loadingState').style.display = 'none';
+      document.getElementById('mainContent').style.display = 'block';
+
+      const username = user.username || '用户';
+      const email = user.email || '';
+      const initial = username.charAt(0).toUpperCase();
+
+      document.getElementById('userAvatar').textContent = initial;
+      document.getElementById('displayName').textContent = username;
+      document.getElementById('displayEmail').textContent = email || '未设置邮箱';
+
+      if (user.created_at) {
+        document.getElementById('infoCreatedAt').textContent =
+          new Date(user.created_at).toLocaleDateString('zh-CN');
+      }
+    }
+
+    // ============ EDIT PROFILE ============
+    function openEditProfile() {
+      document.getElementById('editUsername').value = document.getElementById('displayName').textContent;
+      document.getElementById('editEmail').value = document.getElementById('displayEmail').textContent === '未设置邮箱' ? '' : document.getElementById('displayEmail').textContent;
+      document.getElementById('editModal').classList.add('active');
+    }
+
+    function closeEditModal() {
+      document.getElementById('editModal').classList.remove('active');
+    }
+
+    document.getElementById('editModal').addEventListener('click', function(e) {
+      if (e.target === this) closeEditModal();
+    });
+
+    function saveProfile() {
+      const newUsername = document.getElementById('editUsername').value.trim();
+      const newEmail = document.getElementById('editEmail').value.trim();
+
+      if (!newUsername) {
+        showToast('用户名不能为空', 'error');
+        return;
+      }
+
+      document.getElementById('displayName').textContent = newUsername;
+      document.getElementById('displayEmail').textContent = newEmail || '未设置邮箱';
+      document.getElementById('userAvatar').textContent = newUsername.charAt(0).toUpperCase();
+
+      // Update localStorage
+      try {
+        const storedUser = JSON.parse(localStorage.getItem('huanling_user') || '{}');
+        storedUser.username = newUsername;
+        if (newEmail) storedUser.email = newEmail;
+        localStorage.setItem('huanling_user', JSON.stringify(storedUser));
+      } catch (e) {}
+
+      closeEditModal();
+      showToast('资料已更新');
+    }
+
+    // ============ LOGOUT ============
+    function handleLogout() {
+      localStorage.removeItem('huanling_token');
+      localStorage.removeItem('huanling_user');
+      window.location.href = 'login.html';
+    }
+
+    // ============ TOAST ============
+    function showToast(msg, type) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.className = 'toast';
+      if (type === 'error') toast.classList.add('error');
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2500);
+    }
+  </script>
+</body>
+</html>

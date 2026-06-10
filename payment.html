@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>支付 · 幻灵</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #F5F5F7;
+      --card: #FFFFFF;
+      --text: #1D1D1F;
+      --text-secondary: #86868B;
+      --blue: #007AFF;
+      --blue-hover: #0066D6;
+      --alipay-blue: #1677FF;
+      --wechat-green: #07C160;
+      --border: #E5E5EA;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+      --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
+      --radius: 12px;
+      --radius-lg: 20px;
+      --transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .page-container {
+      width: 100%;
+      max-width: 440px;
+    }
+
+    /* Header */
+    .page-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .back-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: none;
+      background: var(--card);
+      box-shadow: var(--shadow-sm);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+      color: var(--text);
+    }
+
+    .back-btn:hover {
+      background: #F0F0F5;
+      transform: translateX(-2px);
+    }
+
+    .page-title {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    /* Amount Card */
+    .amount-card {
+      background: var(--card);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: 32px;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .amount-label {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    .amount-value {
+      font-size: 56px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -2px;
+      line-height: 1;
+    }
+
+    .amount-value .currency {
+      font-size: 32px;
+      font-weight: 600;
+      vertical-align: super;
+      letter-spacing: 0;
+    }
+
+    /* Payment Tabs */
+    .payment-tabs {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .payment-tab {
+      flex: 1;
+      height: 52px;
+      border-radius: var(--radius);
+      border: 2px solid var(--border);
+      background: var(--card);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: inherit;
+      color: var(--text-secondary);
+      transition: var(--transition);
+    }
+
+    .payment-tab:hover {
+      border-color: #D1D1D6;
+    }
+
+    .payment-tab.active.alipay-tab {
+      border-color: var(--alipay-blue);
+      background: rgba(22,119,255,0.05);
+      color: var(--alipay-blue);
+    }
+
+    .payment-tab.active.wechat-tab {
+      border-color: var(--wechat-green);
+      background: rgba(7,193,96,0.05);
+      color: var(--wechat-green);
+    }
+
+    .tab-icon {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* QR Code Card */
+    .qr-card {
+      background: var(--card);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: 32px;
+      text-align: center;
+      overflow: hidden;
+      animation: fadeSlideIn 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
+    }
+
+    @keyframes fadeSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .qr-payment-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      font-size: 28px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .qr-payment-icon.alipay {
+      background: linear-gradient(135deg, #1677FF, #1677FF);
+    }
+
+    .qr-payment-icon.wechat {
+      background: linear-gradient(135deg, #07C160, #06AD56);
+    }
+
+    .qr-title {
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      letter-spacing: -0.3px;
+    }
+
+    .qr-image-wrapper {
+      background: #FAFAFA;
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .qr-image {
+      width: 200px;
+      height: 200px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .qr-placeholder {
+      width: 200px;
+      height: 200px;
+      background: #F0F0F5;
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
+    .qr-hint {
+      font-size: 14px;
+      color: var(--text);
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    .qr-hint .highlight {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .qr-hint .highlight.alipay-highlight {
+      color: var(--alipay-blue);
+    }
+
+    .qr-hint .highlight.wechat-highlight {
+      color: var(--wechat-green);
+    }
+
+    .qr-subtitle {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    /* Bottom Notice */
+    .bottom-notice {
+      text-align: center;
+      margin-top: 24px;
+      padding: 16px;
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      font-size: 13px;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .notice-icon {
+      color: var(--blue);
+    }
+
+    /* Pulse animation for QR */
+    .qr-pulse {
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(0,122,255,0.1); }
+      50% { box-shadow: 0 0 0 12px rgba(0,122,255,0); }
+    }
+
+    @media (max-width: 480px) {
+      .amount-value {
+        font-size: 44px;
+      }
+      .amount-value .currency {
+        font-size: 26px;
+      }
+      .qr-image {
+        width: 160px;
+        height: 160px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-container">
+    <!-- Header -->
+    <div class="page-header">
+      <button class="back-btn" onclick="history.back()" title="返回">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <h1 class="page-title">选择支付方式</h1>
+    </div>
+
+    <!-- Amount -->
+    <div class="amount-card">
+      <div class="amount-label">支付金额</div>
+      <div class="amount-value">
+        <span class="currency">¥</span>99
+      </div>
+    </div>
+
+    <!-- Payment Tabs -->
+    <div class="payment-tabs">
+      <button class="payment-tab active alipay-tab" onclick="switchPayment('alipay')">
+        <span class="tab-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
+        </span>
+        支付宝
+      </button>
+      <button class="payment-tab wechat-tab" onclick="switchPayment('wechat')">
+        <span class="tab-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 0 1 .213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.29.295a.326.326 0 0 0 .167-.054l1.903-1.114a.864.864 0 0 1 .717-.098 10.16 10.16 0 0 0 2.837.403c.276 0 .543-.027.811-.05-.857-2.578.157-4.972 1.932-6.446 1.703-1.415 3.882-1.98 5.853-1.838-.576-3.583-4.196-6.348-8.596-6.348zM5.785 5.991c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 0 1-1.162 1.178A1.17 1.17 0 0 1 4.623 7.17c0-.651.52-1.18 1.162-1.18zm5.813 0c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 0 1-1.162 1.178 1.17 1.17 0 0 1-1.162-1.178c0-.651.52-1.18 1.162-1.18zm5.34 2.867c-1.797-.052-3.746.512-5.28 1.786-1.72 1.428-2.687 3.72-1.78 6.22.942 2.453 3.666 4.229 6.884 4.229.826 0 1.622-.12 2.361-.336a.722.722 0 0 1 .598.082l1.584.926a.272.272 0 0 0 .14.045c.133 0 .241-.108.241-.245 0-.06-.024-.12-.04-.178l-.325-1.233a.49.49 0 0 1 .177-.554C23.028 18.48 24 16.82 24 14.98c0-3.21-2.931-5.952-7.062-6.122zm-2.18 2.769c.535 0 .969.44.969.982a.976.976 0 0 1-.969.983.976.976 0 0 1-.969-.983c0-.542.434-.982.97-.982zm4.844 0c.535 0 .969.44.969.982a.976.976 0 0 1-.969.983.976.976 0 0 1-.969-.983c0-.542.434-.982.97-.982z"/></svg>
+        </span>
+        微信
+      </button>
+    </div>
+
+    <!-- Alipay QR Card -->
+    <div id="alipayCard" class="qr-card">
+      <div class="qr-payment-icon alipay">支</div>
+      <div class="qr-title">支付宝扫码付款</div>
+      <div class="qr-image-wrapper qr-pulse">
+        <img src="images/alipay-qrcode.png" alt="支付宝收款码" class="qr-image" onerror="this.parentElement.innerHTML='<div class=\'qr-placeholder\'>支付宝收款码</div>'">
+      </div>
+      <div class="qr-hint">请打开支付宝<span class="highlight alipay-highlight">【扫一扫】</span>完成付款</div>
+      <div class="qr-subtitle">收款方：美食玩具店(**俊)</div>
+    </div>
+
+    <!-- WeChat QR Card -->
+    <div id="wechatCard" class="qr-card" style="display:none;">
+      <div class="qr-payment-icon wechat">微</div>
+      <div class="qr-title">微信扫码付款</div>
+      <div class="qr-image-wrapper qr-pulse">
+        <img src="images/wechat-qrcode.png" alt="微信收款码" class="qr-image" onerror="this.parentElement.innerHTML='<div class=\'qr-placeholder\'>微信收款码</div>'">
+      </div>
+      <div class="qr-hint">请打开微信<span class="highlight wechat-highlight">【扫一扫】</span>完成付款</div>
+      <div class="qr-subtitle">收款方：蜂鸟2号(**俊)</div>
+    </div>
+
+    <!-- Bottom Notice -->
+    <div class="bottom-notice">
+      <span class="notice-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      </span>
+      付款完成后请联系客服确认
+    </div>
+  </div>
+
+  <script>
+    function switchPayment(type) {
+      const alipayCard = document.getElementById('alipayCard');
+      const wechatCard = document.getElementById('wechatCard');
+      const alipayTab = document.querySelector('.alipay-tab');
+      const wechatTab = document.querySelector('.wechat-tab');
+
+      if (type === 'alipay') {
+        alipayTab.classList.add('active');
+        wechatTab.classList.remove('active');
+        wechatCard.style.display = 'none';
+        alipayCard.style.display = 'block';
+        // Re-trigger animation
+        alipayCard.style.animation = 'none';
+        alipayCard.offsetHeight;
+        alipayCard.style.animation = 'fadeSlideIn 0.35s cubic-bezier(0.25, 0.1, 0.25, 1)';
+      } else {
+        wechatTab.classList.add('active');
+        alipayTab.classList.remove('active');
+        alipayCard.style.display = 'none';
+        wechatCard.style.display = 'block';
+        wechatCard.style.animation = 'none';
+        wechatCard.offsetHeight;
+        wechatCard.style.animation = 'fadeSlideIn 0.35s cubic-bezier(0.25, 0.1, 0.25, 1)';
+      }
+    }
+  </script>
+</body>
+</html>
